@@ -1,16 +1,25 @@
 """Console script for testservier."""
-import sys
+
 import click
+
+from src.testservier import run, get_top
+
+
+@click.group()
+def cli():
+    pass
 
 
 @click.command()
-def main(args=None):
-    """Console script for testservier."""
-    click.echo("Replace this message by putting your code into "
-               "testservier.cli.main")
-    click.echo("See click documentation at https://click.palletsprojects.com/")
-    return 0
+def run_pipeline():
+    run()
 
 
-if __name__ == "__main__":
-    sys.exit(main())  # pragma: no cover
+@click.command()
+@click.option("--top", default=1, help="Get top N jounals.")
+def top_journals(top):
+    print(get_top(top))
+
+
+cli.add_command(run_pipeline)
+cli.add_command(top_journals)
