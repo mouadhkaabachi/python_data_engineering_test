@@ -6,32 +6,35 @@ import pytest
 
 from click.testing import CliRunner
 
-from src import testservier
 from src import cli
+from src.common.common import get_config
+from src.common.utils import get_top_journals
+from src.loader.loader import load_csv_files
 
 
 @pytest.fixture
-def response():
-    """Sample pytest fixture.
-
-    See more at: http://doc.pytest.org/en/latest/fixture.html
-    """
-    # import requests
-    # return requests.get('https://github.com/audreyr/cookiecutter-pypackage')
+def loaded_dataframes():
+    config = get_config()
+    data_source_folder = config["DATA_SOURCE_FOLDER"]
+    return load_csv_files(data_source_folder)
 
 
-def test_content(response):
-    """Sample pytest test function with the pytest fixture as an argument."""
-    # from bs4 import BeautifulSoup
-    # assert 'GitHub' in BeautifulSoup(response.content).title.string
+def test_load_csv_files(loaded_dataframes):
+    """Test loaded_dataframes function."""
+    assert len(loaded_dataframes["drugs"]) > 0
+    assert len(loaded_dataframes["clinical_trials"]) > 0
+    assert "atccode" in loaded_dataframes["drugs"].columns
+
+
+def test_get_top_journal():
+    """Test loaded_dataframes function."""
+    top_journals = get_top_journals("./tests/drug_out_test_file.json")
+    assert top_journals[0][0] == "Journal of emergency nursing"
 
 
 def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner()
-    result = runner.invoke(cli.main)
-    assert result.exit_code == 0
-    assert 'testservier.cli.main' in result.output
-    help_result = runner.invoke(cli.main, ['--help'])
+    help_result = runner.invoke(cli.run_pipeline, ["--help"])
     assert help_result.exit_code == 0
-    assert '--help  Show this message and exit.' in help_result.output
+    assert "--help  Show this message and exit." in help_result.output

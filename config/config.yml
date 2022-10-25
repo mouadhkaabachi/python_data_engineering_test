@@ -1,2 +1,3 @@
-DATA_SOURCE_FOLDER: ../data
+DATA_SOURCE_FOLDER: "data"
 SEP: ","
+OUTPUT_FILE: "output/drug_out.json"
